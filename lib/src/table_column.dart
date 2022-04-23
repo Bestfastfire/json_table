@@ -16,6 +16,7 @@ class TableColumn extends StatelessWidget {
   final int? highlightedRowIndex;
   final bool allowRowHighlight;
   final Color? rowHighlightColor;
+  final int columnIdx;
 
   TableColumn(
     this.header,
@@ -27,10 +28,12 @@ class TableColumn extends StatelessWidget {
     this.highlightedRowIndex,
     this.allowRowHighlight,
     this.rowHighlightColor,
-  );
+    this.columnIdx);
 
   @override
   Widget build(BuildContext context) {
+    int _rowIdx = 0;
+
     return IntrinsicWidth(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,9 +43,8 @@ class TableColumn extends StatelessWidget {
               : Container(
                   padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
                   decoration: BoxDecoration(
-                    border: Border.all(width: 0.5),
-                    color: Colors.grey[300],
-                  ),
+                      border: Border.all(width: 0.5),
+                      color: Colors.grey[300]),
                   child: Text(
                     header!,
                     textAlign: TextAlign.center,
@@ -55,62 +57,47 @@ class TableColumn extends StatelessWidget {
                 ),
           Container(
             child: Column(
-              children: dataList!
-                  .map(
-                    (rowMap) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            onRowTap(dataList!.indexOf(rowMap), rowMap);
-                          },
-                          child: Container(
-                            color: (allowRowHighlight &&
-                                    highlightedRowIndex != null &&
-                                    highlightedRowIndex ==
-                                        dataList!.indexOf(rowMap))
-                                ? rowHighlightColor ??
-                                    Colors.yellowAccent.withOpacity(0.7)
-                                : null,
-                            child: tableCellBuilder != null
-                                ? tableCellBuilder!(
-                                    getFormattedValue(
-                                      jsonUtils.get(
-                                        rowMap,
-                                        column?.field ?? header!,
-                                        column?.defaultValue ?? '',
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 4.0, vertical: 2.0),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                      width: 0.5,
-                                      color: Colors.grey.withOpacity(0.5),
-                                    )),
-                                    child: Text(
-                                      getFormattedValue(
-                                        jsonUtils.get(
-                                          rowMap,
-                                          column?.field ?? header!,
-                                          column?.defaultValue ?? '',
-                                        ),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                  .toList(),
-            ),
+              children: dataList!.map((rowMap){
+                return GestureDetector(
+                  onTap: () {
+                    onRowTap(dataList!.indexOf(rowMap), rowMap);
+
+                  },
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    color: (allowRowHighlight &&
+                        highlightedRowIndex != null &&
+                        highlightedRowIndex ==
+                            dataList!.indexOf(rowMap))
+                        ? rowHighlightColor ?? Colors.yellowAccent.withOpacity(0.7)
+                        : null,
+                    child: tableCellBuilder != null
+                        ? tableCellBuilder!(
+                              Map.from(rowMap), columnIdx, _rowIdx++,
+                              getFormattedValue(
+                                  jsonUtils.get(
+                                      rowMap,
+                                      column?.field ?? header!,
+                                      column?.defaultValue ?? '')))
+                        : Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 4.0, vertical: 2.0),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 0.5,
+                                    color: Colors.grey.withOpacity(0.5))),
+                              child: Text(
+                                getFormattedValue(
+                                  jsonUtils.get(
+                                      rowMap,
+                                      column?.field ?? header!,
+                                      column?.defaultValue ?? ''),),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14.0))),
+                  ),
+                );
+              }).toList()),
           )
         ],
       ),

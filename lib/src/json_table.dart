@@ -7,7 +7,10 @@ import 'json_table_column.dart';
 import 'table_column.dart';
 
 typedef TableHeaderBuilder = Widget Function(String? header);
-typedef TableCellBuilder = Widget Function(dynamic value);
+
+typedef TableCellBuilder = Widget Function(Map<String, dynamic> rowValues,
+   int column, int row, dynamic value);
+
 typedef OnRowSelect = void Function(int index, dynamic map);
 
 class JsonTable extends StatefulWidget {
@@ -76,6 +79,8 @@ class _JsonTableState extends State<JsonTable> {
 
   @override
   Widget build(BuildContext context) {
+    int _columnIdx = 0;
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -136,8 +141,7 @@ class _JsonTableState extends State<JsonTable> {
                 ? Row(
                     children: widget.columns!
                         .where((item) => filterHeaderList.contains(item.field))
-                        .map(
-                          (item) => TableColumn(
+                        .map((item) => TableColumn(
                             item.label,
                             _getPaginatedData(),
                             widget.tableHeaderBuilder,
@@ -147,14 +151,10 @@ class _JsonTableState extends State<JsonTable> {
                             highlightedRowIndex,
                             widget.allowRowHighlight,
                             widget.rowHighlightColor,
-                          ),
-                        )
-                        .toList(),
-                  )
+                            _columnIdx++)).toList())
                 : Row(
                     children: filterHeaderList
-                        .map(
-                          (header) => TableColumn(
+                        .map((header) => TableColumn(
                             header,
                             _getPaginatedData(),
                             widget.tableHeaderBuilder,
@@ -164,11 +164,7 @@ class _JsonTableState extends State<JsonTable> {
                             highlightedRowIndex,
                             widget.allowRowHighlight,
                             widget.rowHighlightColor,
-                          ),
-                        )
-                        .toList(),
-                  ),
-          ),
+                            _columnIdx++)).toList())),
           if (_showPagination())
             PaginationBox(
               pageIndex: pageIndex,
