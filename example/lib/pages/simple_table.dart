@@ -33,10 +33,8 @@ class _SimpleTableState extends State<SimpleTable> {
                   children: [
                     JsonTable(
                       json,
-                      showColumnToggle: true,
-                      allowRowHighlight: true,
+                      // firstIsFixed: true,
                       rowHighlightColor: Colors.yellow[500]!.withOpacity(0.7),
-                      paginationRowCount: 4,
                       onRowSelect: (index, map) {
                         print(index);
                         print(map);

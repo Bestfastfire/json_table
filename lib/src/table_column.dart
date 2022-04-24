@@ -58,44 +58,49 @@ class TableColumn extends StatelessWidget {
           Container(
             child: Column(
               children: dataList!.map((rowMap){
-                return GestureDetector(
-                  onTap: () {
-                    onRowTap(dataList!.indexOf(rowMap), rowMap);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        onRowTap(dataList!.indexOf(rowMap), rowMap);
 
-                  },
-                  child: Container(
-                    alignment: Alignment.centerLeft,
-                    color: (allowRowHighlight &&
-                        highlightedRowIndex != null &&
-                        highlightedRowIndex ==
-                            dataList!.indexOf(rowMap))
-                        ? rowHighlightColor ?? Colors.yellowAccent.withOpacity(0.7)
-                        : null,
-                    child: tableCellBuilder != null
-                        ? tableCellBuilder!(
-                              Map.from(rowMap), columnIdx, _rowIdx++,
-                              getFormattedValue(
-                                  jsonUtils.get(
-                                      rowMap,
-                                      column?.field ?? header!,
-                                      column?.defaultValue ?? '')))
-                        : Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 4.0, vertical: 2.0),
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                    width: 0.5,
-                                    color: Colors.grey.withOpacity(0.5))),
-                              child: Text(
-                                getFormattedValue(
-                                  jsonUtils.get(
-                                      rowMap,
-                                      column?.field ?? header!,
-                                      column?.defaultValue ?? ''),),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14.0))),
-                  ),
+                      },
+                      child: Container(
+                        // alignment: Alignment.centerLeft,
+                        color: (allowRowHighlight &&
+                            highlightedRowIndex != null &&
+                            highlightedRowIndex ==
+                                dataList!.indexOf(rowMap))
+                            ? rowHighlightColor ?? Colors.yellowAccent.withOpacity(0.7)
+                            : null,
+                        child: tableCellBuilder != null
+                            ? tableCellBuilder!(
+                                  Map.from(rowMap), columnIdx, _rowIdx++,
+                                  getFormattedValue(
+                                      jsonUtils.get(
+                                          rowMap,
+                                          column?.field ?? header!,
+                                          column?.defaultValue ?? '')))
+                            : Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 4.0, vertical: 2.0),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        width: 0.5,
+                                        color: Colors.grey.withOpacity(0.5))),
+                                  child: Text(
+                                    getFormattedValue(
+                                      jsonUtils.get(
+                                          rowMap,
+                                          column?.field ?? header!,
+                                          column?.defaultValue ?? ''),),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 14.0))),
+                      ),
+                    ),
+                  ],
                 );
               }).toList()),
           )

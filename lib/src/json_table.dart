@@ -24,6 +24,7 @@ class JsonTable extends StatefulWidget {
   final int? paginationRowCount;
   final String filterTitle;
   final OnRowSelect? onRowSelect;
+  final bool firstIsFixed;
 
   JsonTable(
     this.dataList, {
@@ -34,6 +35,7 @@ class JsonTable extends StatefulWidget {
     this.showColumnToggle = false,
     this.allowRowHighlight = false,
     this.filterTitle = 'ADD FILTERS',
+    this.firstIsFixed = false,
     this.rowHighlightColor,
     this.paginationRowCount,
     this.onRowSelect,
@@ -135,36 +137,73 @@ class _JsonTableState extends State<JsonTable> {
                 ],
               ),
             ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: (widget.columns != null)
-                ? Row(
-                    children: widget.columns!
-                        .where((item) => filterHeaderList.contains(item.field))
-                        .map((item) => TableColumn(
-                            item.label,
-                            _getPaginatedData(),
-                            widget.tableHeaderBuilder,
-                            widget.tableCellBuilder,
-                            item,
-                            onRowTap,
-                            highlightedRowIndex,
-                            widget.allowRowHighlight,
-                            widget.rowHighlightColor,
-                            _columnIdx++)).toList())
-                : Row(
-                    children: filterHeaderList
-                        .map((header) => TableColumn(
-                            header,
-                            _getPaginatedData(),
-                            widget.tableHeaderBuilder,
-                            widget.tableCellBuilder,
-                            null,
-                            onRowTap,
-                            highlightedRowIndex,
-                            widget.allowRowHighlight,
-                            widget.rowHighlightColor,
-                            _columnIdx++)).toList())),
+
+          if(widget.firstIsFixed)
+              Row(
+                children: [
+                  TableColumn(
+                      filterHeaderList.first,
+                      _getPaginatedData(),
+                      widget.tableHeaderBuilder,
+                      widget.tableCellBuilder,
+                      null,
+                      onRowTap,
+                      highlightedRowIndex,
+                      widget.allowRowHighlight,
+                      widget.rowHighlightColor,
+                      _columnIdx++),
+                  Flexible(
+                      child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                              children: filterHeaderList.toList()
+                                  .getRange(1, filterHeaderList.length)
+                                  .map((header) => TableColumn(
+                                      header,
+                                      _getPaginatedData(),
+                                      widget.tableHeaderBuilder,
+                                      widget.tableCellBuilder,
+                                      null,
+                                      onRowTap,
+                                      highlightedRowIndex,
+                                      widget.allowRowHighlight,
+                                      widget.rowHighlightColor,
+                                      _columnIdx++)).toList())))
+                ],
+              )
+
+          else
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: (widget.columns != null)
+                    ? Row(
+                        children: widget.columns!
+                            .where((item) => filterHeaderList.contains(item.field))
+                            .map((item) => TableColumn(
+                                item.label,
+                                _getPaginatedData(),
+                                widget.tableHeaderBuilder,
+                                widget.tableCellBuilder,
+                                item,
+                                onRowTap,
+                                highlightedRowIndex,
+                                widget.allowRowHighlight,
+                                widget.rowHighlightColor,
+                                _columnIdx++)).toList())
+                    : Row(
+                        children: filterHeaderList
+                            .map((header) => TableColumn(
+                                header,
+                                _getPaginatedData(),
+                                widget.tableHeaderBuilder,
+                                widget.tableCellBuilder,
+                                null,
+                                onRowTap,
+                                highlightedRowIndex,
+                                widget.allowRowHighlight,
+                                widget.rowHighlightColor,
+                                _columnIdx++)).toList())),
+
           if (_showPagination())
             PaginationBox(
               pageIndex: pageIndex,
